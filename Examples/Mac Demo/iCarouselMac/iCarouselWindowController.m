@@ -12,7 +12,7 @@
 @interface iCarouselWindowController ()
 
 @property (nonatomic, assign) BOOL wrap;
-@property (nonatomic, retain) NSMutableArray *items;
+@property (nonatomic, strong) NSMutableArray *items;
 
 @end
 
@@ -41,8 +41,8 @@
 - (void)awakeFromNib
 {
     //configure carousel
-    carousel.type = iCarouselTypeCoverFlow2;
-    [self.window makeFirstResponder:carousel];
+    self.carousel.type = iCarouselTypeCoverFlow2;
+    [self.window makeFirstResponder:self.carousel];
 }
 
 - (void)dealloc
@@ -52,53 +52,51 @@
 	carousel.delegate = nil;
 	carousel.dataSource = nil;
 	
-    [carousel release];
-    [super dealloc];
 }
 
 - (IBAction)switchCarouselType:(id)sender
 {
-	//restore view opacities to normal
-    for (NSView *view in carousel.visibleItemViews)
+    //restore view opacities to normal
+    for (NSView *view in self.carousel.visibleItemViews)
     {
         view.layer.opacity = 1.0;
     }
 	
-    carousel.type = (iCarouselType)[sender tag];
+    self.carousel.type = (iCarouselType)[sender tag];
 }
 
 - (IBAction)toggleVertical:(id)sender
 {
-    carousel.vertical = !carousel.vertical;
-    [sender setState:carousel.vertical? NSOnState: NSOffState];
+    self.carousel.vertical = !self.carousel.vertical;
+    [(NSMenuItem *)sender setState:self.carousel.vertical? NSOnState: NSOffState];
 }
 
 - (IBAction)toggleWrap:(id)sender
 {
-    wrap = !wrap;
-    [sender setState:wrap? NSOnState: NSOffState];
-    [carousel reloadData];
+    self.wrap = !self.wrap;
+    [(NSMenuItem *)sender setState:self.wrap? NSOnState: NSOffState];
+    [self.carousel reloadData];
 }
 
-- (IBAction)insertItem:(id)sender
+- (IBAction)insertItem:(__unused id)sender
 {
-    [carousel insertItemAtIndex:carousel.currentItemIndex animated:YES];
+    [self.carousel insertItemAtIndex:self.carousel.currentItemIndex animated:YES];
 }
 
-- (IBAction)removeItem:(id)sender
+- (IBAction)removeItem:(__unused id)sender
 {
-    [carousel removeItemAtIndex:carousel.currentItemIndex animated:YES];
+    [self.carousel removeItemAtIndex:self.carousel.currentItemIndex animated:YES];
 }
 
 #pragma mark -
 #pragma mark iCarousel methods
 
-- (NSUInteger)numberOfItemsInCarousel:(iCarousel *)carousel
+- (NSInteger)numberOfItemsInCarousel:(__unused iCarousel *)carousel
 {
-    return [items count];
+    return (NSInteger)[self.items count];
 }
 
-- (NSView *)carousel:(iCarousel *)carousel viewForItemAtIndex:(NSUInteger)index reusingView:(NSView *)view
+- (NSView *)carousel:(__unused iCarousel *)carousel viewForItemAtIndex:(NSInteger)index reusingView:(NSView *)view
 {
     NSTextField *label = nil;
     
@@ -109,16 +107,16 @@
         //this `if (view == nil) {...}` statement because the view will be
         //recycled and used with other index values later
 		NSImage *image = [NSImage imageNamed:@"page.png"];
-       	view = [[[NSImageView alloc] initWithFrame:NSMakeRect(0,0,image.size.width,image.size.height)] autorelease];
+       	view = [[NSImageView alloc] initWithFrame:NSMakeRect(0,0,image.size.width,image.size.height)];
         [(NSImageView *)view setImage:image];
         [(NSImageView *)view setImageScaling:NSImageScaleAxesIndependently];
         
-        label = [[[NSTextField alloc] init] autorelease];
+        label = [[NSTextField alloc] init];
         [label setBackgroundColor:[NSColor clearColor]];
         [label setBordered:NO];
         [label setSelectable:NO];
         [label setAlignment:NSCenterTextAlignment];
-        [label setFont:[NSFont fontWithName:[[label font] fontName] size:50]];
+        [label setFont:[NSFont fontWithName:[(NSFont * __nonnull)[label font] fontName] size:50]];
         label.tag = 1;
         [view addSubview:label];
 	}
@@ -141,13 +139,13 @@
 	return view;
 }
 
-- (NSUInteger)numberOfPlaceholdersInCarousel:(iCarousel *)carousel
+- (NSInteger)numberOfPlaceholdersInCarousel:(__unused iCarousel *)carousel
 {
 	//note: placeholder views are only displayed if wrapping is disabled
 	return 2;
 }
 
-- (NSView *)carousel:(iCarousel *)carousel placeholderViewAtIndex:(NSUInteger)index reusingView:(NSView *)view
+- (NSView *)carousel:(__unused iCarousel *)carousel placeholderViewAtIndex:(NSInteger)index reusingView:(NSView *)view
 {
 	NSTextField *label = nil;
     
@@ -155,16 +153,16 @@
 	if (view == nil)
 	{
 		NSImage *image = [NSImage imageNamed:@"page.png"];
-       	view = [[[NSImageView alloc] initWithFrame:NSMakeRect(0,0,image.size.width,image.size.height)] autorelease];
+       	view = [[NSImageView alloc] initWithFrame:NSMakeRect(0,0,image.size.width,image.size.height)];
         [(NSImageView *)view setImage:image];
         [(NSImageView *)view setImageScaling:NSImageScaleAxesIndependently];
         
-        label = [[[NSTextField alloc] init] autorelease];
+        label = [[NSTextField alloc] init];
         [label setBackgroundColor:[NSColor clearColor]];
         [label setBordered:NO];
         [label setSelectable:NO];
         [label setAlignment:NSCenterTextAlignment];
-        [label setFont:[NSFont fontWithName:[[label font] fontName] size:50]];
+        [label setFont:[NSFont fontWithName:[(NSFont * __nonnull)[label font] fontName] size:50]];
         label.tag = 1;
         [view addSubview:label];
 	}
@@ -187,21 +185,21 @@
     return view;
 }
 
-- (CGFloat)carouselItemWidth:(iCarousel *)carousel
+- (CGFloat)carouselItemWidth:(__unused iCarousel *)carousel
 {
     //set correct view size
     //because the background image on the views makes them too large
-    return 200.0f;
+    return 200.0;
 }
 
-- (CATransform3D)carousel:(iCarousel *)_carousel itemTransformForOffset:(CGFloat)offset baseTransform:(CATransform3D)transform
+- (CATransform3D)carousel:(__unused iCarousel *)_carousel itemTransformForOffset:(CGFloat)offset baseTransform:(CATransform3D)transform
 {
     //implement 'flip3D' style carousel
-    transform = CATransform3DRotate(transform, M_PI / 8.0f, 0.0f, 1.0f, 0.0f);
-    return CATransform3DTranslate(transform, 0.0f, 0.0f, offset * carousel.itemWidth);
+    transform = CATransform3DRotate(transform, M_PI / 8.0, 0.0, 1.0, 0.0);
+    return CATransform3DTranslate(transform, 0.0, 0.0, offset * self.carousel.itemWidth);
 }
 
-- (CGFloat)carousel:(iCarousel *)_carousel valueForOption:(iCarouselOption)option withDefault:(CGFloat)value
+- (CGFloat)carousel:(__unused iCarousel *)_carousel valueForOption:(iCarouselOption)option withDefault:(CGFloat)value
 {
     //customize carousel display
     switch (option)
@@ -209,24 +207,34 @@
         case iCarouselOptionWrap:
         {
             //normally you would hard-code this to YES or NO
-            return wrap;
+            return self.wrap;
         }
         case iCarouselOptionSpacing:
         {
             //reduce item spacing to compensate
             //for drop shadow and reflection around views
-            return value * 1.05f;
+            return value * 1.05;
         }
         case iCarouselOptionFadeMax:
         {
-            if (carousel.type == iCarouselTypeCustom)
+            if (self.carousel.type == iCarouselTypeCustom)
             {
                 //set opacity based on distance from camera
-                return 0.0f;
+                return 0.0;
             }
             return value;
         }
-        default:
+        case iCarouselOptionShowBackfaces:
+        case iCarouselOptionRadius:
+        case iCarouselOptionAngle:
+        case iCarouselOptionArc:
+        case iCarouselOptionTilt:
+        case iCarouselOptionCount:
+        case iCarouselOptionFadeMin:
+        case iCarouselOptionFadeMinAlpha:
+        case iCarouselOptionFadeRange:
+        case iCarouselOptionOffsetMultiplier:
+        case iCarouselOptionVisibleItems:
         {
             return value;
         }

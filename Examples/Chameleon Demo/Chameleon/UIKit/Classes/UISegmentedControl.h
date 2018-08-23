@@ -53,7 +53,7 @@ enum {
 }
 
 @property (nonatomic) UISegmentedControlStyle segmentedControlStyle; // stub
-@property (nonatomic,retain) UIColor *tintColor; // stub
+@property (nonatomic,strong) UIColor *tintColor; // stub
 @property (nonatomic, assign, readonly) NSUInteger numberOfSegments;
 @property (nonatomic, assign) NSInteger selectedSegmentIndex;
 @property (nonatomic, getter=isMomentary) BOOL momentary;
@@ -79,5 +79,8 @@ enum {
 
 - (void)setEnabled:(BOOL)enabled forSegmentAtIndex:(NSUInteger)segment;
 - (BOOL)isEnabledForSegmentAtIndex:(NSUInteger)segment;
+
+- (void)setTitleTextAttributes:(NSDictionary *)attributes forState:(UIControlState)state;
+- (NSDictionary *)titleTextAttributesForState:(UIControlState)state;
 
 @end

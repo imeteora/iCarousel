@@ -30,6 +30,12 @@
 #import "UIView.h"
 #import "UIInterface.h"
 
+typedef enum {
+    UIToolbarPositionAny = 0,
+    UIToolbarPositionBottom = 1,
+    UIToolbarPositionTop = 2,
+} UIToolbarPosition;
+
 @interface UIToolbar : UIView {
 @private
     UIBarStyle _barStyle;
@@ -41,7 +47,7 @@
 - (void)setItems:(NSArray *)items animated:(BOOL)animated;
 
 @property (nonatomic) UIBarStyle barStyle;
-@property (nonatomic, retain) UIColor *tintColor;
+@property (nonatomic, strong) UIColor *tintColor;
 @property (nonatomic, copy) NSArray *items;
 @property (nonatomic,assign,getter=isTranslucent) BOOL translucent;
 

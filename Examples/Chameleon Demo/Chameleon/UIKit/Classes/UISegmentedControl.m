@@ -15,15 +15,15 @@
 static NSString *kSSSegmentedControlEnabledKey = @"enabled";
 
 @interface UISegmentedControl ()
-@property (nonatomic, retain) UIImage *buttonImage;
-@property (nonatomic, retain) UIImage *highlightedButtonImage;
-@property (nonatomic, retain) UIImage *dividerImage;
-@property (nonatomic, retain) UIImage *highlightedDividerImage;
+@property (nonatomic, strong) UIImage *buttonImage;
+@property (nonatomic, strong) UIImage *highlightedButtonImage;
+@property (nonatomic, strong) UIImage *dividerImage;
+@property (nonatomic, strong) UIImage *highlightedDividerImage;
 
-@property (nonatomic, retain) UIFont *font;
-@property (nonatomic, retain) UIColor *textColor;
-@property (nonatomic, retain) UIColor *disabledTextColor;
-@property (nonatomic, retain) UIColor *textShadowColor;
+@property (nonatomic, strong) UIFont *font;
+@property (nonatomic, strong) UIColor *textColor;
+@property (nonatomic, strong) UIColor *disabledTextColor;
+@property (nonatomic, strong) UIColor *textShadowColor;
 @property (nonatomic, assign) CGSize textShadowOffset;
 @property (nonatomic, assign) UIEdgeInsets textEdgeInsets;
 
@@ -380,7 +380,7 @@ static NSString *kSSSegmentedControlEnabledKey = @"enabled";
         return nil;
     }
     
-    NSString *key = [NSString stringWithFormat:@"%lu", index];
+    NSString *key = [NSString stringWithFormat:@"%lu", (unsigned long)index];
     return [_segmentMeta objectForKey:key];
 }
 
@@ -405,7 +405,7 @@ static NSString *kSSSegmentedControlEnabledKey = @"enabled";
         _segmentMeta = [[NSMutableDictionary alloc] init];
     }
     
-    [_segmentMeta setValue:meta forKey:[NSString stringWithFormat:@"%lu", index]];
+    [_segmentMeta setValue:meta forKey:[NSString stringWithFormat:@"%lu", (unsigned long)index]];
     [self setNeedsDisplay];
 }
 
@@ -423,6 +423,17 @@ static NSString *kSSSegmentedControlEnabledKey = @"enabled";
     }
     
     [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+}
+
+#pragma mark Appearance
+
+- (void)setTitleTextAttributes:(NSDictionary *)attributes forState:(UIControlState)state
+{
+}
+
+- (NSDictionary *)titleTextAttributesForState:(UIControlState)state
+{
+    return nil;
 }
 
 @end

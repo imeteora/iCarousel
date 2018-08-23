@@ -11,13 +11,8 @@
 
 
 @interface iCarouselWindowController : NSWindowController <iCarouselDataSource, iCarouselDelegate>
-{
-    iCarousel *carousel;
-    BOOL wrap;
-    NSMutableArray *items;
-}
 
-@property (nonatomic, retain) IBOutlet iCarousel *carousel;
+@property (nonatomic, strong) IBOutlet iCarousel *carousel;
 
 - (IBAction)switchCarouselType:(id)sender;
 - (IBAction)toggleVertical:(id)sender;

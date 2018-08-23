@@ -27,8 +27,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <Foundation/Foundation.h>
-#import "UIGeometry.h"
+#import "UIControl.h"
 
 @class UIImage;
 
@@ -42,9 +41,12 @@
 }
 
 @property (nonatomic, getter=isEnabled) BOOL enabled;
-@property (nonatomic, retain) UIImage *image;
+@property (nonatomic, strong) UIImage *image;
 @property (nonatomic, assign) UIEdgeInsets imageInsets;
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic) NSInteger tag;
+
+- (void)setTitleTextAttributes:(NSDictionary *)attributes forState:(UIControlState)state;
+- (NSDictionary *)titleTextAttributesForState:(UIControlState)state;
 
 @end

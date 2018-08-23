@@ -17,8 +17,6 @@
 {
     carousel.delegate = nil;
     carousel.dataSource = nil;
-    [carousel release];
-    [super dealloc];
 }
 
 #pragma mark -
@@ -46,7 +44,7 @@
 #pragma mark -
 #pragma mark iCarousel methods
 
-- (NSUInteger)numberOfItemsInCarousel:(iCarousel *)carousel
+- (NSInteger)numberOfItemsInCarousel:(iCarousel *)carousel
 {
     //generate 100 buttons
     //normally we'd use a backing array
@@ -55,7 +53,7 @@
     return 100;
 }
 
-- (UIView *)carousel:(iCarousel *)carousel viewForItemAtIndex:(NSUInteger)index reusingView:(UIView *)view
+- (UIView *)carousel:(iCarousel *)carousel viewForItemAtIndex:(NSInteger)index reusingView:(UIView *)view
 { 
 	UIButton *button = (UIButton *)view;
 	if (button == nil)
@@ -71,7 +69,7 @@
 	}
 	
 	//set button label
-	[button setTitle:[NSString stringWithFormat:@"%i", index] forState:UIControlStateNormal];
+	[button setTitle:[NSString stringWithFormat:@"%zd", index] forState:UIControlStateNormal];
 	
 	return button;
 }
@@ -84,11 +82,11 @@
 	//get item index for button
 	NSInteger index = [carousel indexOfItemViewOrSubview:sender];
 	
-    [[[[UIAlertView alloc] initWithTitle:@"Button Tapped"
-                                 message:[NSString stringWithFormat:@"You tapped button number %i", index]
+    [[[UIAlertView alloc] initWithTitle:@"Button Tapped"
+                                 message:[NSString stringWithFormat:@"You tapped button number %zd", index]
                                 delegate:nil
                        cancelButtonTitle:@"OK"
-                       otherButtonTitles:nil] autorelease] show];
+                       otherButtonTitles:nil] show];
 }
 
 @end

@@ -32,8 +32,6 @@
 {
     carousel.delegate = nil;
     carousel.dataSource = nil;
-    [carousel release];
-    [super dealloc];
 }
 
 #pragma mark -
@@ -61,12 +59,12 @@
 #pragma mark -
 #pragma mark iCarousel methods
 
-- (NSUInteger)numberOfItemsInCarousel:(iCarousel *)carousel
+- (NSInteger)numberOfItemsInCarousel:(iCarousel *)carousel
 {
     return 1000;
 }
 
-- (UIView *)carousel:(iCarousel *)carousel viewForItemAtIndex:(NSUInteger)index reusingView:(UIView *)view
+- (UIView *)carousel:(iCarousel *)carousel viewForItemAtIndex:(NSInteger)index reusingView:(UIView *)view
 {
     if (useButtons)
     {  
@@ -82,9 +80,9 @@
     else
     {
         //create a numbered view
-        view = [[[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 200.0f, 200.0f)] autorelease];
+        view = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 200.0f, 200.0f)];
         view.backgroundColor = [UIColor lightGrayColor];
-		UILabel *label = [[[UILabel alloc] initWithFrame:view.bounds] autorelease];
+		UILabel *label = [[UILabel alloc] initWithFrame:view.bounds];
         label.text = [NSString stringWithFormat:@"%i", index];
         label.backgroundColor = [UIColor clearColor];
         label.textAlignment = UITextAlignmentCenter;
@@ -156,11 +154,11 @@
 
 - (void)buttonTapped:(UIButton *)sender
 {
-    [[[[UIAlertView alloc] initWithTitle:@"Button Tapped"
+    [[[UIAlertView alloc] initWithTitle:@"Button Tapped"
                                  message:[NSString stringWithFormat:@"You tapped button number %i", [carousel indexOfItemView:sender]]
                                 delegate:nil
                        cancelButtonTitle:@"OK"
-                       otherButtonTitles:nil] autorelease] show];
+                       otherButtonTitles:nil] show];
 }
 
 @end

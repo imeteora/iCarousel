@@ -12,31 +12,44 @@
 #define SYNCHRONIZE_CAROUSELS NO
 
 
-@interface iCarouselExampleViewController ()
+@interface iCarouselExampleViewController () <iCarouselDataSource, iCarouselDelegate>
 
-@property (nonatomic, retain) NSMutableArray *items;
+@property (nonatomic, strong) IBOutlet iCarousel *carousel;
+@property (nonatomic, strong) NSMutableArray *items;
 
 @end
 
 
 @implementation iCarouselExampleViewController
 
-@synthesize carousel = _carousel;
-@synthesize items = _items;
-
-- (void)awakeFromNib
+- (id)initWithCoder:(NSCoder *)aDecoder
 {
-    //set up data
-    //this is an array of arrays
-    self.items = [NSMutableArray array];
-    for (int i = 0; i < 100; i++)
+    if ((self = [super initWithCoder:aDecoder]))
     {
-        NSMutableArray *subitems = [NSMutableArray array];
-        for (int j = 0; j < 20; j++)
+        //set up data
+        //this is an array of arrays
+        self.items = [NSMutableArray array];
+        for (int i = 0; i < 100; i++)
         {
-            [subitems addObject:[NSNumber numberWithInt:j]];
+            NSMutableArray *subitems = [NSMutableArray array];
+            for (int j = 0; j < 20; j++)
+            {
+                [subitems addObject:[NSNumber numberWithInt:j]];
+            }
+            [_items addObject:subitems];
         }
-        [_items addObject:subitems];
+    }
+    return self;
+}
+
+- (void)updatePerspective
+{
+    for (iCarousel *subCarousel in _carousel.visibleItemViews)
+    {
+        NSInteger index = subCarousel.tag;
+        CGFloat offset = [_carousel offsetForItemAtIndex:index];
+        subCarousel.viewpointOffset = CGSizeMake(-offset * _carousel.itemWidth, 0.0f);
+        subCarousel.contentOffset = CGSizeMake(-offset * _carousel.itemWidth, 0.0f);
     }
 }
 
@@ -48,10 +61,6 @@
     //you are targeting iOS 5 as a minimum deployment target
     _carousel.delegate = nil;
     _carousel.dataSource = nil;
-    
-    [_carousel release];
-    [_items release];
-    [super dealloc];
 }
 
 #pragma mark -
@@ -64,6 +73,13 @@
     //configure outer carousel
     _carousel.type = iCarouselTypeLinear;
     _carousel.centerItemWhenSelected = NO;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+  
+    [self updatePerspective];
 }
 
 - (void)viewDidUnload
@@ -84,10 +100,17 @@
 
 - (CGFloat)carouselItemWidth:(iCarousel *)carousel
 {
-    return 210.0f;
+    if (carousel == _carousel)
+    {
+        return 210.0f;
+    }
+    else
+    {
+        return 210.0f;
+    }
 }
 
-- (NSUInteger)numberOfItemsInCarousel:(iCarousel *)carousel
+- (NSInteger)numberOfItemsInCarousel:(iCarousel *)carousel
 {
     if (carousel == _carousel)
     {
@@ -100,13 +123,13 @@
     }
 }
 
-- (UIView *)carousel:(iCarousel *)carousel viewForItemAtIndex:(NSUInteger)index reusingView:(UIView *)view
+- (UIView *)carousel:(iCarousel *)carousel viewForItemAtIndex:(NSInteger)index reusingView:(UIView *)view
 {
     if (carousel == _carousel)
     {
         //item for outer carousel
         iCarousel *subCarousel = (iCarousel *)view;
-        
+
         if (view == nil)
         {
             subCarousel = [[iCarousel alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 200.0f, self.view.bounds.size.height)];
@@ -114,9 +137,9 @@
             subCarousel.delegate = self;
             subCarousel.vertical = YES;
             subCarousel.type = iCarouselTypeCylinder;
-            view = [subCarousel autorelease];
+            view = subCarousel;
         }
-        
+
         //configure view
         //you might want to restore a saved scrollOffset here
         //but for now we'll just set it to zero
@@ -134,11 +157,11 @@
             UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 200.0f, 200.0f)];
             imageView.image = [UIImage imageNamed:@"page.png"];
             imageView.contentMode = UIViewContentModeCenter;
-            view = [imageView autorelease];
+            view = imageView;
             
-            label = [[[UILabel alloc] initWithFrame:view.bounds] autorelease];
+            label = [[UILabel alloc] initWithFrame:view.bounds];
             label.backgroundColor = [UIColor clearColor];
-            label.textAlignment = UITextAlignmentCenter;
+            label.textAlignment = NSTextAlignmentCenter;
             label.font = [label.font fontWithSize:50];
             label.tag = 1;
             [view addSubview:label];
@@ -166,13 +189,7 @@
         //adjust perspective for inner carousels
         //every time the outer carousel is moved
         //for 2D carousel styles this wouldn't be neccesary
-        for (iCarousel *subCarousel in _carousel.visibleItemViews)
-        {
-            NSInteger index = subCarousel.tag;
-            CGFloat offset = [_carousel offsetForItemAtIndex:index];
-            subCarousel.viewpointOffset = CGSizeMake(-offset * _carousel.itemWidth, 0.0f);
-            subCarousel.contentOffset = CGSizeMake(-offset * _carousel.itemWidth, 0.0f);
-        }
+        [self updatePerspective];
     }
     else if (SYNCHRONIZE_CAROUSELS)
     {
